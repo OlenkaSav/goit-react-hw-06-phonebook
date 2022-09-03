@@ -8,7 +8,6 @@ import styled from 'styled-components';
 
 function Form({ contacts, onSubmit }) {
   const { lang } = useContext(langContext);
-  console.log(lang);
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 

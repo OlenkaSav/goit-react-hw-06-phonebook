@@ -1,76 +1,43 @@
 // import React, { Component } from 'react';
-import { useState, useEffect, memo } from 'react';
-import useLocalStorage from 'hooks/localStorage';
+import { memo } from 'react';
 import Form from './Form';
 import ContactList from './ContactList';
 import Filter from './Filter';
 
 import Lang from './Lang';
 import useLang from 'hooks/useLang';
-
-// import LangProvider from '../LangContext';
 import contentText from './Lang/contentText.json';
 
 import styled from 'styled-components';
-import { nanoid } from 'nanoid';
+// import { nanoid } from 'nanoid';
 
+import { useSelector, useDispatch } from 'react-redux/es/exports';
+import { addContact, deleteContact, filterContact } from 'redux/actions';
+import { getFilter, visibleContacts } from '../redux/selectors';
 //  { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
 //       { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
 //       { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
 //       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
 
 function App() {
-  // console.log(data);
-  const [contacts, setContacts] = useLocalStorage('contacts', []);
-  const [filter, setFilter] = useState('');
-  // const [lang, setLang] = useState('ua');
+  const filter = useSelector(getFilter);
+  const contacts = useSelector(visibleContacts);
 
-  useEffect(() => {
-    const contacts = window.localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
-    if (parsedContacts) {
-      setContacts(parsedContacts);
-    }
-  }, [setContacts]);
-
-  useEffect(() => {
-    window.localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
+  const dispatch = useDispatch();
   const { lang } = useLang();
-  // const lang = useContext(langContext);
-  console.log(lang);
 
-  // useEffect(() => {
-  //   const title = contentText.title[lang];
-  //   // const contactsList = contentText.contacts[lang];
-  // }, [lang]);
-
-  const addContact = (name, number) => {
-    const person = {
-      id: nanoid(),
-      name,
-      number,
-    };
-    setContacts([...contacts, person]);
+  const onAddContact = (name, number) => {
+    const payload = { name, number };
+    const action = addContact(payload);
+    dispatch(action);
   };
 
-  const changeFilter = e => {
-    setFilter(e.currentTarget.value);
+  const onDeleteContact = payload => {
+    dispatch(deleteContact(payload));
   };
 
-  const deleteContact = contactId => {
-    setContacts(contacts =>
-      contacts.filter(contact => contact.id !== contactId)
-    );
-  };
-
-  const visibleContacts = () => {
-    const normalizedFilter = filter.toLowerCase();
-
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilter)
-    );
+  const onChangeFilter = e => {
+    dispatch(filterContact(e.currentTarget.value));
   };
 
   const title = contentText.title[lang];
@@ -79,13 +46,10 @@ function App() {
     <Wrapper>
       <Title>{title}</Title>
       <Lang />
-      <Form onSubmit={addContact} contacts={contacts} />
+      <Form onSubmit={onAddContact} contacts={contacts} />
       <Title>{contactsList}</Title>
-      <Filter value={filter} onChange={changeFilter} />
-      <ContactList
-        contacts={visibleContacts()}
-        onDeleteContact={deleteContact}
-      />
+      <Filter value={filter} onChange={onChangeFilter} />
+      <ContactList contacts={contacts} onDeleteContact={onDeleteContact} />
     </Wrapper>
   );
 }
