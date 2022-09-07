@@ -12,7 +12,8 @@ import styled from 'styled-components';
 // import { nanoid } from 'nanoid';
 
 import { useSelector, useDispatch } from 'react-redux/es/exports';
-import { addContact, deleteContact, filterContact } from 'redux/actions';
+// import { addContact, deleteContact, filterContact } from 'redux/actions'; VANILA
+import { addContact, deleteContact, filterContact } from 'redux/slise';
 import { getFilter, visibleContacts } from '../redux/selectors';
 //  { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
 //       { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
@@ -33,6 +34,7 @@ function App() {
   };
 
   const onDeleteContact = payload => {
+    console.log(payload);
     dispatch(deleteContact(payload));
   };
 

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const Lang = () => {
   const { lang, switchLang } = useLang();
-  console.log('inside lang' + lang);
+  // console.log('inside lang' + lang);
 
   return (
     <StyledSwitch>
